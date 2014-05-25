@@ -11,7 +11,7 @@ if ( process.argv.length == 4 )
 }
 else
 {
-  console.log("Usage: organizemusic SOURCE_DIR DST_DIR");
+  console.log("Usage: musicorganizer SOURCE_DIR DST_DIR");
   process.exit(0);
 }
 

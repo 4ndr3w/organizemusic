@@ -5,17 +5,17 @@ Quick node.js program that organizes your music library based off of metadata ta
 
 #### Install
 ```
-npm install -g organizemusic
+npm install -g musicorganizer
 ```
 
 #### Usage
 ```
-$ organizemusic
-Usage: organizemusic SOURCE_DIR DST_DIR
+$ musicorganizer
+Usage: musicorganizer SOURCE_DIR DST_DIR
 ```
 
 ```
-$ organizemusic UnorganizedMusic OrganizedMusic
+$ musicorganizer UnorganizedMusic OrganizedMusic
 ```
 
 All media in the "UnorganizedMusic" will be moved to the "OrganizedMusic" folder and renamed based on the file's metadata.
