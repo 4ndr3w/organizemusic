@@ -1,7 +1,7 @@
 {
   "name": "musicorganizer",
-  "description": "Quick node.js program that organizes your music library based off on metadata tags",
-  "version": "0.0.1",
+  "description": "Quick node.js program that organizes your music library based on metadata tags",
+  "version": "0.0.2",
 
   "main": "index.js",
 

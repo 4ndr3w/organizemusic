@@ -1,7 +1,7 @@
 musicorganizer
 ==============
 
-Quick node.js program that organizes your music library based off of metadata tags
+Quick node.js program that organizes your music library based on metadata tags
 
 #### Install
 ```
