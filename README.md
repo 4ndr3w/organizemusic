@@ -3,6 +3,10 @@ musicorganizer
 
 Quick node.js program that organizes your music library based off of metadata tags
 
+#### Install
+```
+npm install -g organizemusic
+```
 
 #### Usage
 ```
