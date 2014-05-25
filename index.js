@@ -44,15 +44,17 @@ async.eachLimit(
     {
       if ( data.artist.length != 0 && data.title && data.album  )
       {
+        console.log(data);
         var artist_dir = path.join(dst_dir, data.artist.join(""));
-        var dst = path.join(artist_dir, data.album, data.title+filetype);
+        var dst = path.join(artist_dir, data.album+"("+data.year+")");
+        dst = path.join(dst, data.title);
 
         try
         {
           fs.mkdirSync(artist_dir);
-          fs.mkdirSync(path.join(artist_dir, data.album));
+          fs.mkdirSync(path.join(artist_dir, data.album+"("+data.year+")"));
         } catch (e) {  }
-
+        console.log("Processed "+src);
         fs.rename(src, dst);
       }
       cb();
@@ -62,7 +64,6 @@ async.eachLimit(
     {
       if ( err )
       {
-        console.log("Failed to read "+src+" - "+err);
         cb();
       }
     });
