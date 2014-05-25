@@ -4,6 +4,8 @@ var metadata = require("musicmetadata"),
     fs = require("fs"),
     path = require("path");
 
+var concurrent = 100;
+
 if ( process.argv.length == 4 )
 {
   var source_dir = process.argv[2];
@@ -31,30 +33,38 @@ function buildFS(p)
 }
 buildFS(source_dir);
 
-async.each(
+async.eachLimit(
   files,
+  concurrent,
   function(src, cb)
   {
     var parser = metadata(fs.createReadStream(src), {duration:false});
     var filetype = path.extname(src);
     parser.on("metadata", function(data)
     {
-      var artist_dir = path.join(dst_dir, data.artist.join(""));
-      var dst = path.join(artist_dir, data.title+filetype);
-
-      try
+      if ( data.artist.length != 0 && data.title && data.album  )
       {
-        fs.mkdirSync(artist_dir);
-      } catch (e) {  }
+        var artist_dir = path.join(dst_dir, data.artist.join(""));
+        var dst = path.join(artist_dir, data.album, data.title+filetype);
 
-      fs.rename(src, dst);
+        try
+        {
+          fs.mkdirSync(artist_dir);
+          fs.mkdirSync(path.join(artist_dir, data.album));
+        } catch (e) {  }
+
+        fs.rename(src, dst);
+      }
+      cb();
     });
 
     parser.on("done", function(err)
     {
       if ( err )
-        console.log("Failed to read "+file+" - "+err);
-      cb();
+      {
+        console.log("Failed to read "+src+" - "+err);
+        cb();
+      }
     });
   },
   function(err)
