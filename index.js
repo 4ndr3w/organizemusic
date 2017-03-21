@@ -20,15 +20,19 @@ else
 var files = new Array();
 function buildFS(p)
 {
-  var dir = fs.readdirSync(p);
-  for ( d in dir )
-  {
-    var file = path.join(p,dir[d]);
-    var stats = fs.statSync(file);
-    if ( stats.isDirectory() )
-      buildFS(file);
-    else
-      files.push(file);
+  if (fs.lstatSync(p).isDirectory()) {
+    var dir = fs.readdirSync(p);
+    for ( var d in dir )
+    {
+      var file = path.join(p,dir[d]);
+      var stats = fs.statSync(file);
+      if ( stats.isDirectory() )
+        buildFS(file);
+      else
+        files.push(file);
+    }
+  } else {
+    files.push(p);
   }
 }
 buildFS(source_dir);
@@ -38,23 +42,34 @@ async.eachLimit(
   concurrent,
   function(src, cb)
   {
+    var extension = path.extname(src);
     var parser = metadata(fs.createReadStream(src), {duration:false});
     var filetype = path.extname(src);
     parser.on("metadata", function(data)
     {
-      if ( data.artist.length != 0 && data.title && data.album  )
+      if ( data.artist.length !== 0 && data.title && data.album  )
       {
         console.log(data);
         var artist_dir = path.join(dst_dir, data.artist.join(""));
-        var dst = path.join(artist_dir, data.album+"("+data.year+")");
-        dst = path.join(dst, data.title);
+        var albumDirName = data.album;
+        if (data.year) {
+          albumDirName += ' (' + data.year +')';
+        }
+        var albumDirPath = path.join(artist_dir, albumDirName);
+        var dst = path.join(artist_dir, albumDirName);
 
-        try
-        {
-          fs.mkdirSync(artist_dir);
-          fs.mkdirSync(path.join(artist_dir, data.album+"("+data.year+")"));
-        } catch (e) {  }
-        console.log("Processed "+src);
+        var fileName = data.title.replace(/[\/\?<>\\:\*\|":]/g,'-') + (extension ? extension : '');
+        dst = path.join(dst, fileName);
+
+        try {
+          if (!fs.existsSync(artist_dir)) {
+            fs.mkdirSync(artist_dir);
+          }
+          if (fs.existsSync(artist_dir) && !fs.existsSync(albumDirPath)) {
+            fs.mkdirSync(albumDirPath);
+          }
+        } catch (e) { throw(e); }
+        console.log("Processed "+src, '~>', dst);
         fs.rename(src, dst);
       }
       cb();
